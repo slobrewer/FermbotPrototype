@@ -1,10 +1,8 @@
 // Do not remove the include below
 #include "FermbotPrototype.h"
-#include "Thermometer.h"
+#include "TempController.h"
 
-#include <DallasTemperature.h>
-
-Thermometer thermometer;
+TempController tempController;
 
 //The setup function is called once at startup of the sketch
 void setup() {
@@ -12,15 +10,16 @@ void setup() {
    Serial.begin(9600);
 
    // start the thermometer library
-   thermometer.begin();
+   tempController.begin();
+   tempController.setTargetTemp(80.0f);
 
-   Serial.println("Initialized.  (Build 003)");
+   Serial.println("Initialized. (Build 011)");
 }
 
 void printTemperature()
 {
-  float tempF = thermometer.readTemperatureF();
-  if (thermometer.isInError()) {
+  float tempF = tempController.readFermentationTempF();
+  if (tempController.isFermentationTempError()) {
     Serial.print("Error getting temperature");
   } else {
     Serial.print(" F: ");
@@ -32,9 +31,5 @@ void printTemperature()
 void loop() {
    delay(2000);
 
-   Serial.print("Getting temperatures...\n\r");
-
-   Serial.print("Inside temperature is: ");
-   printTemperature();
-   Serial.print("\n\r\n\r");
+   tempController.processTempControl();
 }
